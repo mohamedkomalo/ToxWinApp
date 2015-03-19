@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToxWinApp
 {
-    public class Friend
+    public class ToxAccount
     {
         public string Id { get; set; }
         public string Name { get; set; }

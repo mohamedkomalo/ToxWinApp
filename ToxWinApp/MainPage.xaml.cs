@@ -31,7 +31,7 @@ namespace ToxWinApp
             new ToxNode("178.62.250.138", 33445, new ToxKey(ToxKeyType.Public, "788236D34978D1D5BD822F0A5BEBD2C53C64CC31CD3149350EE27D4D9A2F9B6B"))
         };
 
-        private ObservableCollection<Friend> myFriends = new ObservableCollection<Friend>();
+        private ObservableCollection<ToxAccount> myFriends = new ObservableCollection<ToxAccount>();
 
 
         public MainPage()
@@ -53,12 +53,12 @@ namespace ToxWinApp
 
             foreach (int friendNumber in tox.FriendList)
             {
-                Friend f = new Friend();
+                ToxAccount f = new ToxAccount();
                 f.Name = tox.GetName(friendNumber);
                 f.Status = tox.GetStatusMessage(friendNumber);
                 myFriends.Add(f);
             }
-            myFriends.Add(new Friend() { Name = "komalo", Status = "offline" });
+            myFriends.Add(new ToxAccount() { Name = "komalo", Status = "offline" });
 
             tox.OnFriendRequest += tox_OnFriendRequest;
             tox.OnFriendMessage += tox_OnFriendMessage;
@@ -94,7 +94,7 @@ namespace ToxWinApp
             
             Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
             {
-                Friend f = new Friend();
+                ToxAccount f = new ToxAccount();
                 f.Id = e.Id;
                 f.Name = tox.GetName(friendNumber);
 
