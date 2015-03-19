@@ -23,7 +23,6 @@ namespace ToxWinApp
 {
     public sealed partial class MainPage : Page
     {
-        private Tox tox;
 
         //check https://wiki.tox.im/Nodes for an up-to-date list of nodes
         private ToxNode[] Nodes = new ToxNode[]
@@ -31,8 +30,10 @@ namespace ToxWinApp
             new ToxNode("178.62.250.138", 33445, new ToxKey(ToxKeyType.Public, "788236D34978D1D5BD822F0A5BEBD2C53C64CC31CD3149350EE27D4D9A2F9B6B"))
         };
 
-        private ObservableCollection<ToxAccount> myFriends = new ObservableCollection<ToxAccount>();
+        private Tox tox;
 
+        private ObservableCollection<Friend> myFriends = new ObservableCollection<Friend>();
+        private ToxAccount myAccount = new ToxAccount();
 
         public MainPage()
         {
@@ -50,15 +51,20 @@ namespace ToxWinApp
             tox = new Tox(options);
             
             friendsListView.ItemsSource = myFriends;
+            messagesListView.ItemsSource = null;
 
             foreach (int friendNumber in tox.FriendList)
             {
-                ToxAccount f = new ToxAccount();
+                Friend f = new Friend();
                 f.Name = tox.GetName(friendNumber);
                 f.Status = tox.GetStatusMessage(friendNumber);
                 myFriends.Add(f);
             }
-            myFriends.Add(new ToxAccount() { Name = "komalo", Status = "offline" });
+            
+            Friend dummyFriend = new Friend() { FriendNumber = -1, Name = "komalo", Status = "offline" };
+            dummyFriend.Conversation.Add(new Message() { Sender = new Friend(), Content = "AAAAAAAAAA" });
+
+            myFriends.Add(dummyFriend);
 
             tox.OnFriendRequest += tox_OnFriendRequest;
             tox.OnFriendMessage += tox_OnFriendMessage;
@@ -69,22 +75,31 @@ namespace ToxWinApp
             string displayName = await UserInformation.GetDisplayNameAsync();
 
             tox.Name = String.IsNullOrEmpty(displayName) ? "New User" : displayName;
-
+            
             tox.StatusMessage = "Hello World!";
 
             tox.Start();
 
-            string id = tox.Id.ToString();
-            myIDtxt.Text = id;
+            myAccount.Id = tox.Id.ToString();
+            myAccount.Name = tox.Name;
+            myAccount.Status = tox.StatusMessage;
+
+            myIDtxt.Text = myAccount.Id;
         }
 
         private void tox_OnFriendMessage(object sender, ToxEventArgs.FriendMessageEventArgs e)
         {
-            //get the name associated with the friendnumber
-            string name = tox.GetName(e.FriendNumber);
+            System.Diagnostics.Debug.WriteLine(e.FriendNumber);
 
-            //print the message to the console
-            System.Diagnostics.Debug.WriteLine("<{0}> {1}", name, e.Message);
+            Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                Friend senderFriend = myFriends.First(f => f.FriendNumber == e.FriendNumber);
+
+                senderFriend.Conversation.Add(new Message() { Sender = senderFriend, Content = e.Message });
+                
+                System.Diagnostics.Debug.WriteLine("<{0}> {1}", senderFriend.Id, e.Message);
+            });
+
         }
 
         private void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
@@ -94,8 +109,9 @@ namespace ToxWinApp
             
             Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
             {
-                ToxAccount f = new ToxAccount();
+                Friend f = new Friend();
                 f.Id = e.Id;
+                f.FriendNumber = friendNumber;
                 f.Name = tox.GetName(friendNumber);
 
                 while (String.IsNullOrEmpty(f.Name))
@@ -108,6 +124,32 @@ namespace ToxWinApp
 
                 myFriends.Add(f);
             });
+        }
+
+        private void SelectedFriendChanged(object sender, SelectionChangedEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("Select changed" + e.ToString());
+            if (e.AddedItems.Count > 0)
+            {
+                Friend found = (Friend)e.AddedItems[0];
+                messagesListView.ItemsSource = found.Conversation;
+            }
+        }
+
+        private void SendClick(object sender, RoutedEventArgs e)
+        {
+            if (friendsListView.SelectedItems.Count > 0)
+            {
+                string messageBody = sendMessageText.Text;
+                Friend reciptFriend = (Friend)friendsListView.SelectedItems[0];
+                int isSent = tox.SendMessage(reciptFriend.FriendNumber, messageBody);
+
+                if (isSent > 0)
+                {
+                    reciptFriend.Conversation.Add(new Message() { Sender = myAccount, Content = messageBody });
+                    sendMessageText.Text = String.Empty;
+                }
+            }
         }
     }
 }

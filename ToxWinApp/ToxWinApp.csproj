@@ -114,6 +114,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Conversation.cs" />
+    <Compile Include="Friend.cs" />
     <Compile Include="ToxAccount.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

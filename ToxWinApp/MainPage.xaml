@@ -19,16 +19,16 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListViewItem">
-                        <ListViewItemPresenter CheckHintBrush="{ThemeResource ListViewItemCheckHintThemeBrush}" CheckBrush="{ThemeResource ListViewItemCheckThemeBrush}" ContentMargin="4" ContentTransitions="{TemplateBinding ContentTransitions}" CheckSelectingBrush="{ThemeResource ListViewItemCheckSelectingThemeBrush}" DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}" DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}" DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}" DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}" FocusBorderBrush="{ThemeResource ListViewItemFocusBorderThemeBrush}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" PointerOverBackgroundMargin="1" PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" PointerOverBackground="{ThemeResource ListViewItemPointerOverBackgroundThemeBrush}" ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}" SelectedPointerOverBorderBrush="{ThemeResource ListViewItemSelectedPointerOverBorderThemeBrush}" SelectedForeground="{ThemeResource ListViewItemSelectedForegroundThemeBrush}" SelectedPointerOverBackground="{ThemeResource ListViewItemSelectedPointerOverBackgroundThemeBrush}" SelectedBorderThickness="{ThemeResource ListViewItemCompactSelectedBorderThemeThickness}" SelectedBackground="{ThemeResource ListViewItemSelectedBackgroundThemeBrush}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        <ListViewItemPresenter CheckHintBrush="{ThemeResource ListViewItemCheckHintThemeBrush}" CheckBrush="{ThemeResource ListViewItemCheckThemeBrush}" ContentMargin="4" ContentTransitions="{TemplateBinding ContentTransitions}" CheckSelectingBrush="{ThemeResource ListViewItemCheckSelectingThemeBrush}" DragForeground="{ThemeResource ListViewItemDragForegroundThemeBrush}" DragOpacity="{ThemeResource ListViewItemDragThemeOpacity}" DragBackground="{ThemeResource ListViewItemDragBackgroundThemeBrush}" DisabledOpacity="{ThemeResource ListViewItemDisabledThemeOpacity}" FocusBorderBrush="{ThemeResource ListViewItemFocusBorderThemeBrush}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" Padding="{TemplateBinding Padding}" PointerOverBackgroundMargin="1" PlaceholderBackground="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" PointerOverBackground="{ThemeResource ListViewItemPointerOverBackgroundThemeBrush}" ReorderHintOffset="{ThemeResource ListViewItemReorderHintThemeOffset}" SelectedPointerOverBorderBrush="{ThemeResource ListViewItemSelectedPointerOverBorderThemeBrush}" SelectedForeground="{ThemeResource ListViewItemSelectedForegroundThemeBrush}" SelectedPointerOverBackground="{ThemeResource ListViewItemSelectedPointerOverBackgroundThemeBrush}" SelectedBorderThickness="{ThemeResource ListViewItemCompactSelectedBorderThemeThickness}" SelectedBackground="{ThemeResource ListViewItemSelectedBackgroundThemeBrush}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        
+
         <!-- Dummy data to assist in design the layout -->
 
-        <local:ToxAccount x:Key="Friend1" Name="Sample Friend 1" Status="Sample Status 1" />
-        <local:ToxAccount x:Key="Friend2" Name="Sample Friend 2" Status="Sample Status 2" />
+        <local:Friend x:Key="Friend1" Name="Sample Friend 1" Status="Sample Status 1" />
+        <local:Friend x:Key="Friend2" Name="Sample Friend 2" Status="Sample Status 2" />
         <local:Conversation x:Key="conv1">
             <local:Message Sender="{StaticResource Friend1}" Content="Hey how are you ?"></local:Message>
             <local:Message Sender="{StaticResource Friend2}" Content="fine, thanks"></local:Message>
@@ -39,8 +39,8 @@
         <TextBox x:Name="myIDtxt" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Margin="30,28,0,0" Width="715" Height="59"/>
 
         <ListView x:Name="friendsListView"
-          Margin="30,114,1017,34" SelectionMode="None" ItemContainerStyle="{StaticResource FriendsListViewItemStyle}" Background="#FF8B8B8B">
-            
+          Margin="30,114,1017,34" SelectionMode="Single" ItemContainerStyle="{StaticResource FriendsListViewItemStyle}" Background="#FF8B8B8B" SelectionChanged="SelectedFriendChanged">
+
             <ResourceDictionary x:Name="Friend1" />
             <ResourceDictionary x:Name="Friend2" />
 
@@ -63,9 +63,9 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <TextBox x:Name="myIDtxt_Copy" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Margin="389,669,0,0" Width="948" Height="65"/>
+        <TextBox x:Name="sendMessageText" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top" Margin="378,669,0,0" Width="860" Height="65" PlaceholderText="Write a message"/>
         <ListView HorizontalAlignment="Left" Height="100" VerticalAlignment="Top" Width="100"/>
-        <ListView x:Name="messagesListView" HorizontalAlignment="Left" Height="527" Margin="389,114,0,0" VerticalAlignment="Top" Width="948" ItemsSource="{StaticResource conv1}">
+        <ListView x:Name="messagesListView" HorizontalAlignment="Left" Height="527" Margin="378,114,0,0" VerticalAlignment="Top" Width="959" ItemsSource="{StaticResource conv1}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="60" Margin="6">
@@ -84,8 +84,8 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
-        <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1260,666,0,0" Height="71" Width="80"/>
+
+        <Button Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1260,666,0,0" Height="71" Width="80" Click="SendClick"/>
 
     </Grid>
 </Page>
