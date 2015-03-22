@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.System.UserProfile;
 using Windows.UI.Xaml;
 
@@ -25,18 +26,48 @@ namespace ToxWinApp
             get { return tox; }
         }
 
-        const string TOX_DATA_SETTING = "TOX_DATA";
+        const string TOX_DATA_FILE_NAME = "tox_data.tox";
 
-        private static ToxData ToxSavedData{
-            set
+        private static async Task SaveData()
+        {
+            StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(TOX_DATA_FILE_NAME, CreationCollisionOption.ReplaceExisting);
+            using (IRandomAccessStream stream = await file.OpenAsync(FileAccessMode.ReadWrite))
             {
-                ApplicationData.Current.LocalSettings.Values[TOX_DATA_SETTING] = value;
+                using (DataWriter writer = new DataWriter(stream))
+                {
+                    writer.WriteBytes(tox.GetData().Bytes);
+                    await writer.StoreAsync();
+                    await writer.FlushAsync();
+                }
             }
-            get
+            
+        }
+        private static async Task LoadData(){
+            byte[] toxData = null;
+            try
             {
-                Object toxData = ApplicationData.Current.LocalSettings.Values[TOX_DATA_SETTING];
-                
-                return toxData == null ? null : ToxData.FromBytes((byte[]) toxData);
+                StorageFile file = await ApplicationData.Current.LocalFolder.GetFileAsync(TOX_DATA_FILE_NAME);
+                using (IRandomAccessStream stream = await file.OpenReadAsync())
+                {
+                    toxData = new byte[stream.Size];
+                    using (DataReader reader = new DataReader(stream))
+                    {
+                        await reader.LoadAsync((uint) stream.Size);
+                        reader.ReadBytes(toxData);
+                    }
+                }
+            }
+            catch (Exception) { }
+
+            if (toxData != null)
+            {
+                tox.Load(ToxData.FromBytes((byte[])toxData));
+                System.Diagnostics.Debug.WriteLine(tox.Name);
+            }
+            else
+            {
+                // Save the data for the first time
+                //await SaveData();
             }
         }
 
@@ -45,12 +76,6 @@ namespace ToxWinApp
             ToxOptions options = new ToxOptions(true, false);
             
             tox = new Tox(options);
-
-            ToxData savedToxData = ToxSavedData;
-            if (savedToxData != null)
-            {
-                tox.Load(savedToxData);
-            }
 
             foreach (ToxNode node in Nodes)
                 tox.BootstrapFromNode(node);
@@ -64,13 +89,22 @@ namespace ToxWinApp
                 tox.StatusMessage = "Hello World!";
             }
 
+            await LoadData();
+
+            tox.Name = "New User";
+            await SaveData();
+
             tox.Start();
+        }
+
+        static void Current_Suspending(object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("suspend");
+            UnloadTox();
         }
 
         static void UnloadTox()
         {
-            ToxSavedData = tox.GetData();
-
             tox.Dispose();
         }
     }
