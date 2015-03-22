@@ -16,7 +16,9 @@ namespace ToxWinApp
         //check https://wiki.tox.im/Nodes for an up-to-date list of nodes
         private static ToxNode[] Nodes = new ToxNode[]
         {
-            new ToxNode("178.62.250.138", 33445, new ToxKey(ToxKeyType.Public, "788236D34978D1D5BD822F0A5BEBD2C53C64CC31CD3149350EE27D4D9A2F9B6B"))
+            new ToxNode("178.62.250.138", 33445, new ToxKey(ToxKeyType.Public, "788236D34978D1D5BD822F0A5BEBD2C53C64CC31CD3149350EE27D4D9A2F9B6B")),
+            new ToxNode("23.226.230.47", 33445, new ToxKey(ToxKeyType.Public, "A09162D68618E742FFBCA1C2C70385E6679604B2D80EA6E84AD0996A1AC8A074")),
+            new ToxNode("195.154.119.113", 33445, new ToxKey(ToxKeyType.Public, "E398A69646B8CEACA9F0B84F553726C1C49270558C57DF5F3C368F05A7D71354"))
         };
 
         private static Tox tox;
@@ -58,7 +60,7 @@ namespace ToxWinApp
                 }
             }
             catch (Exception) { }
-
+            
             if (toxData != null)
             {
                 tox.Load(ToxData.FromBytes((byte[])toxData));
