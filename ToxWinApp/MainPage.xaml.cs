@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System.UserProfile;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -24,6 +25,7 @@ namespace ToxWinApp
     public sealed partial class MainPage : Page
     {
         private ObservableCollection<Friend> myFriends = new ObservableCollection<Friend>();
+        private ObservableCollection<ToxAccount> myRequests = new ObservableCollection<ToxAccount>();
         private ToxAccount myAccount = new ToxAccount();
         
         public MainPage()
@@ -63,13 +65,34 @@ namespace ToxWinApp
             myAccount.Status = tox.StatusMessage;
 
             myIDtxt.Text = myAccount.Id;
+
+            requestsListView.ItemsSource = myRequests;
+            tox.OnNameChange += tox_OnNameChange;
+            tox.OnUserStatus += tox_OnUserStatus;
         }
 
-        
+        async void tox_OnUserStatus(object sender, ToxEventArgs.UserStatusEventArgs e)
+        {
+            //throw new NotImplementedException();
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                Friend senderFriend = myFriends.First(f => f.FriendNumber == e.FriendNumber);
+                senderFriend.Status = e.UserStatus.ToString();
+            });
+        }
+
+        private async void tox_OnNameChange(object sender, ToxEventArgs.NameChangeEventArgs e)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                Friend senderFriend = myFriends.First(f => f.FriendNumber == e.FriendNumber);
+                senderFriend.Name = e.Name;
+            });
+        }
 
         private async void tox_OnFriendMessage(object sender, ToxEventArgs.FriendMessageEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine(e.FriendNumber);
+            System.Diagnostics.Debug.WriteLine("Friend {0} sent: {1}", e.FriendNumber, e.Message);
 
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
             {
@@ -84,13 +107,39 @@ namespace ToxWinApp
 
         private async void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("Request recieved {0}", e.Id);
             //automatically accept every friend request we receive
-            int friendNumber = ToxController.Tox.AddFriendNoRequest(new ToxKey(ToxKeyType.Public, e.Id));
+            
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                myRequests.Add(new ToxAccount() { Id = e.Id, Name = e.Id.ToString() });
+            });
+
+        }
+
+        private async void SelectedRequestChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count == 0) return;
+
+            ToxAccount account = (ToxAccount) e.AddedItems[0];
+
+            MessageDialog confirmRequest = new MessageDialog("Accept this friend request?");
+            
+            bool confirm = false;
+            
+            confirmRequest.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler((cmd) => {confirm = true;})));
+            confirmRequest.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { confirm = false; })));
+
+            await confirmRequest.ShowAsync();
+
+            if(!confirm) return;
+
+            int friendNumber = ToxController.Tox.AddFriendNoRequest(new ToxKey(ToxKeyType.Public, account.Id));
 
             await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
             {
                 Friend f = new Friend();
-                f.Id = e.Id;
+                f.Id = account.Id;
                 f.FriendNumber = friendNumber;
                 f.Name = ToxController.Tox.GetName(friendNumber);
 
@@ -103,6 +152,7 @@ namespace ToxWinApp
                 f.Status = ToxController.Tox.GetStatusMessage(friendNumber);
 
                 myFriends.Add(f);
+                myRequests.Remove(account);
             });
         }
 
@@ -115,7 +165,23 @@ namespace ToxWinApp
                 messagesListView.ItemsSource = found.Conversation;
             }
         }
+        private async void SendRequestClick(object sender, RoutedEventArgs e)
+        {
+            int friendNumber = ToxController.Tox.AddFriend(new ToxId(requestIDText.Text), "Hi hi");
 
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                Friend f = new Friend();
+                f.Id = requestIDText.Text;
+                f.FriendNumber = friendNumber;
+                
+                f.Name = requestIDText.Text;
+                
+                myFriends.Add(f);
+            });
+
+        }
+        
         private void SendClick(object sender, RoutedEventArgs e)
         {
             if (friendsListView.SelectedItems.Count > 0)
