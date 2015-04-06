@@ -62,9 +62,21 @@
                         AutomationProperties.ItemType="Navigation Button"/>
             <TextBlock x:Name="pageTitle" Text="Requests" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+            <Button x:Name="sendRequestButton" Content="Send Request" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,26,77,0" Height="77" Click="sendRequestButton_Click" Width="134" Grid.Column="1">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Width="378">
+                            <TextBlock Text="ID" FontSize="22"/>
+                            <TextBox Name="requestIdText" Text="{Binding Path=MyAccount.Id}" Height="39" />
+                            <TextBlock Text="Request Message" FontSize="22" Margin="0,15,0,0"/>
+                            <TextBox Name="requestMessageTextBox" Text="{Binding Path=MyAccount.Id}" Height="129" />
+
+                            <Button Margin="0,15,0,0" Click="sendRequestButton_Click" FontSize="20" Height="59" Content="Send" Width="85" />
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
-        <TextBox x:Name="requestIDText" TextWrapping="Wrap" VerticalAlignment="Top" Margin="32,18,177,0" Height="37" PlaceholderText="Write Tox ID Here" Grid.Row="1"/>
-        <Button x:Name="sendRequestButton" Content="Send Request" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,15,25,0" Height="43" Click="sendRequestButton_Click" Grid.Row="1" Width="137"/>
         <ListView x:Name="requestsListView"
         	Margin="32,89,28,35" SelectionMode="Single" ItemContainerStyle="{StaticResource FriendsListViewItemStyle}" Background="#FF8B8B8B" SelectionChanged="SelectedRequestChanged" Grid.Row="1">
 
@@ -79,8 +91,8 @@
                             <Image Source="{Binding Image}" Stretch="UniformToFill"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="10,0,0,0">
-                            <TextBlock Text="{Binding Name}" TextWrapping="NoWrap"/>
-                            <TextBlock Text="{Binding Status}" TextWrapping="NoWrap"/>
+                            <TextBlock Text="{Binding Id}" TextWrapping="NoWrap"/>
+                            <TextBlock Text="{Binding Message}" TextWrapping="NoWrap"/>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

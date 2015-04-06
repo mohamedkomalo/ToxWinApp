@@ -93,8 +93,11 @@ namespace ToxWinApp
 
             tox.OnNameChange += tox_OnNameChange;
             tox.OnUserStatus += tox_OnUserStatus;
+            tox.OnFriendRequest += tox_OnFriendRequest;
 
             tox.OnFriendMessage += tox_OnFriendMessage;
+
+            Requests.Add(new RecievedFriendRequest() { Id = "75BC509C2AE5375C28F1EF9CAB53BD75DF0049F25FAE48AA3363A78E05CAB16D09DCE60DA7BF", Message = "Hi" });
         }
 
         public void UnLoad()
@@ -199,6 +202,12 @@ namespace ToxWinApp
         public ObservableCollection<Conversation> Conversations
         {
             get { return _Conversation; }
+        }
+
+        private RequestsList _Requests = new RequestsList();
+        public RequestsList Requests
+        {
+            get { return _Requests; }
         }
 
         private ToxAccount _MyAccount = new ToxAccount();

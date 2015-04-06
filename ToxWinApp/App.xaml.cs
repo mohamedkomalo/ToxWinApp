@@ -123,10 +123,15 @@ namespace ToxWinApp
         {
             get { return ToxController.Instance.Conversations; }
         }
-
+        
         public ToxAccount MyAccount
         {
             get { return ToxController.Instance.MyAccount; }
+        }
+
+        public RequestsList Requests
+        {
+            get { return ToxController.Instance.Requests; }
         }
     }
 }

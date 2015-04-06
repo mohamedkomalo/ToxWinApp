@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Popups;
 
 // The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234237
 
@@ -53,6 +54,8 @@ namespace ToxWinApp
             this.navigationHelper.SaveState += navigationHelper_SaveState;
         }
 
+        public RequestsList Requests { get; set; }
+
         /// <summary>
         /// Populates the page with content passed during navigation. Any saved state is also
         /// provided when recreating a page from a prior session.
@@ -66,6 +69,8 @@ namespace ToxWinApp
         /// session. The state will be null the first time a page is visited.</param>
         private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            this.Requests = (RequestsList)e.NavigationParameter;
+            this.requestsListView.ItemsSource = this.Requests;
         }
 
         /// <summary>
@@ -82,57 +87,30 @@ namespace ToxWinApp
 
         private void sendRequestButton_Click(object sender, RoutedEventArgs e)
         {
-            //int friendNumber = ToxController.Tox.AddFriend(new ToxId(requestIDText.Text), "Hi hi");
-
-            //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
-            //{
-            //    Friend f = new Friend();
-            //    f.Id = requestIDText.Text;
-            //    f.FriendNumber = friendNumber;
-
-            //    f.Name = requestIDText.Text;
-
-            //    myFriends.Add(f);
-            //});
+            if (requestIdText.Text.Length > 0 && requestMessageTextBox.Text.Length > 0)
+            {
+                Requests.SendRequest(requestIdText.Text, requestMessageTextBox.Text);
+            }
         }
 
         private async void SelectedRequestChanged(object sender, SelectionChangedEventArgs e)
         {
-            //if (e.AddedItems.Count == 0) return;
+            if (e.AddedItems.Count == 0) return;
 
-            //ToxAccount account = (ToxAccount) e.AddedItems[0];
+            RecievedFriendRequest recievedRequest = (RecievedFriendRequest)e.AddedItems[0];
 
-            //MessageDialog confirmRequest = new MessageDialog("Accept this friend request?");
+            MessageDialog confirmRequest = new MessageDialog( "Message:" + recievedRequest.Message, "Accept this friend request?");
 
-            //bool confirm = false;
+            bool confirm = false;
 
-            //confirmRequest.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler((cmd) => {confirm = true;})));
-            //confirmRequest.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { confirm = false; })));
+            confirmRequest.Commands.Add(new UICommand("Yes", new UICommandInvokedHandler((cmd) => { confirm = true; })));
+            confirmRequest.Commands.Add(new UICommand("No", new UICommandInvokedHandler((cmd) => { confirm = false; })));
 
-            //await confirmRequest.ShowAsync();
+            await confirmRequest.ShowAsync();
 
-            //if(!confirm) return;
+            if (!confirm) return;
 
-            //int friendNumber = ToxController.Tox.AddFriendNoRequest(new ToxKey(ToxKeyType.Public, account.Id));
-
-            //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
-            //{
-            //    Friend f = new Friend();
-            //    f.Id = account.Id;
-            //    f.FriendNumber = friendNumber;
-            //    f.Name = ToxController.Tox.GetName(friendNumber);
-
-            //    while (String.IsNullOrEmpty(f.Name))
-            //    {
-            //        Task.Delay(30);
-            //        f.Name = ToxController.Tox.GetName(friendNumber);
-            //    }
-
-            //    f.Status = ToxController.Tox.GetStatusMessage(friendNumber);
-
-            //    myFriends.Add(f);
-            //    myRequests.Remove(account);
-            //});
+            recievedRequest.Accept();
         }
 
         #region NavigationHelper registration

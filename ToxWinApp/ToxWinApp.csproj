@@ -122,9 +122,11 @@
       <DependentUpon>ConversationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Friend.cs" />
+    <Compile Include="RecievedFriendRequest.cs" />
     <Compile Include="FriendsPage.xaml.cs">
       <DependentUpon>FriendsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RequestsList.cs" />
     <Compile Include="RequestsPage.xaml.cs">
       <DependentUpon>RequestsPage.xaml</DependentUpon>
     </Compile>

@@ -45,7 +45,7 @@ namespace ToxWinApp
         private void requestsButton_Click(object sender, RoutedEventArgs e)
         {
             
-            Frame.Navigate(typeof(RequestsPage));
+            Frame.Navigate(typeof(RequestsPage),  (App.Current as App).Requests);
         }
 
         private void friendsButton_Click(object sender, RoutedEventArgs e)

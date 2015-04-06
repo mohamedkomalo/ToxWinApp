@@ -30,10 +30,10 @@
         <local:Friend x:Key="Friend1" Name="Sample Friend 1" Status="Sample Status 1" />
         <local:Friend x:Key="Friend2" Name="Sample Friend 2" Status="Sample Status 2" />
 
-        <local:FriendsList x:Key="MyMembers">
+        <local:FriendssList x:Key="MyMembers">
             <local:Friend Name="F3" Status="Sample Status" />
             <local:Friend Name="F4" Status="Sample Status" />
-        </local:FriendsList>
+        </local:FriendssList>
 
         <local:Conversation x:Key="conv1">
             <local:Message Sender="{StaticResource Friend1}" Content="Hey how are you ?"></local:Message>

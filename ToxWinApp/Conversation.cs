@@ -9,7 +9,7 @@ namespace ToxWinApp
 {
     public class ConversationsList : ObservableCollection<Conversation> { }
 
-    public class FriendsList : ObservableCollection<Friend> { }
+    public class FriendssList : ObservableCollection<Friend> { }
 
     public class Conversation : ObservableCollection<Message>
     {
