@@ -1,12 +1,18 @@
-﻿using System;
+﻿using SharpTox.Core;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.System.UserProfile;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -41,7 +47,6 @@ namespace ToxWinApp
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -103,7 +108,25 @@ namespace ToxWinApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
+            
+            // UnloadTox();
+
             deferral.Complete();
+        }
+
+        public ObservableCollection<Friend> Friends
+        {
+            get { return ToxController.Instance.Friends; }
+        }
+
+        public ObservableCollection<Conversation> Conversations
+        {
+            get { return ToxController.Instance.Conversations; }
+        }
+
+        public ToxAccount MyAccount
+        {
+            get { return ToxController.Instance.MyAccount; }
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ToxWinApp
 {
-    class Message
+    public class Message
     {
         public ToxAccount Sender { get; set; }
         public string Content { get; set; }
