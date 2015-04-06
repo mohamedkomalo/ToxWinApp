@@ -57,18 +57,10 @@ namespace ToxWinApp
 
         private void SendClick(object sender, RoutedEventArgs e)
         {
-            //if (friendsListView.SelectedItems.Count > 0)
-            //{
-            //    string messageBody = sendMessageText.Text;
-            //    Friend reciptFriend = (Friend)friendsListView.SelectedItems[0];
-            //    int isSent = ToxController.Tox.SendMessage(reciptFriend.FriendNumber, messageBody);
-
-            //    if (isSent > 0)
-            //    {
-            //        reciptFriend.Conversation.Add(new Message() { Sender = myAccount, Content = messageBody });
-            //        sendMessageText.Text = String.Empty;
-            //    }
-            //}
+            if (this.Conversation.SendMessage(sendMessageText.Text))
+            {
+                sendMessageText.Text = String.Empty;
+            }
         }
 
         /// <summary>

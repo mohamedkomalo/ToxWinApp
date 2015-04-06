@@ -32,7 +32,14 @@ namespace ToxWinApp
         }
 
         public bool SendMessage(String messageBody){
-            return Tox.SendMessage(Members[0].FriendNumber, messageBody) == 1;
+            bool isSent = Tox.SendMessage(Members[0].FriendNumber, messageBody) == 1;
+
+            if (isSent)
+            {
+                this.Add(new Message() { Sender = ToxController.Instance.MyAccount, Content = messageBody });
+            }
+
+            return isSent;
         }
 
         private SharpTox.Core.Tox Tox
