@@ -49,7 +49,6 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBox x:Name="myIDtxt" HorizontalAlignment="Left" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Margin="343,111,0,0" Width="365" Height="29"/>
         <Button x:Name="friendsButton" Content="Friends" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,165,0" Height="65" Click="friendsButton_Click" Width="95"/>
 
         <ListView x:Name="conversationsListView"
@@ -77,7 +76,23 @@
         <Image HorizontalAlignment="Left" Height="65" VerticalAlignment="Top" Width="68" Margin="30,27,0,0" Source="Assets/StoreLogo.png" Stretch="UniformToFill"/>
         <TextBlock HorizontalAlignment="Left" Margin="103,33,0,0" TextWrapping="Wrap" Text="Mohamed Kamal Kamaly" VerticalAlignment="Top" FontSize="24"/>
         <TextBlock HorizontalAlignment="Left" Margin="105,64,0,0" TextWrapping="Wrap" Text="Toxing on tox" VerticalAlignment="Top" FontSize="16"/>
-        <Button x:Name="requestsButton" Content="Requests" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,57,0" Height="65" Click="requestsButton_Click" Width="96"/>
+        <Button x:Name="requestsButton" Content="Requests" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,57,0" Height="65" Click="requestsButton_Click" Width="97"/>
+
+        <Button x:Name="showIdButton" Content="My ID" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,273,0" Height="65" Width="95">
+            <Button.Flyout>
+                <Flyout>
+                    <StackPanel Width="382">
+                        <StackPanel>
+                            <TextBox Name="idTextBox" Text="{Binding Path=MyAccount.Id, Mode=TwoWay}" IsReadOnly="True" />
+
+                            <Button Margin="0,5,0,0" Click="CopyID" Height="50">
+                                Copy
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Flyout>
+            </Button.Flyout>
+        </Button>
     </Grid>
 
 </Page>

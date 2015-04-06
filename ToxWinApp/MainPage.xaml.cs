@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.System.UserProfile;
@@ -28,26 +29,12 @@ namespace ToxWinApp
         {
             this.InitializeComponent();
 
-            App app = (App.Current as App);
-            //myIDtxt.Text = app.MyAccount.Id;
-
-            conversationsListView.ItemsSource = app.Conversations;
-        }
-
-        private async void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
-        {
-            //System.Diagnostics.Debug.WriteLine("Request recieved {0}", e.Id);
-            ////automatically accept every friend request we receive
-            
-            //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
-            //{
-            //    myRequests.Add(new ToxAccount() { Id = e.Id, Name = e.Id.ToString() });
-            //});
+            this.DataContext = (App.Current as App);
+            conversationsListView.ItemsSource = (App.Current as App).Conversations;
         }
 
         private void SelectedConversationChanged(object sender, SelectionChangedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("Select changed" + e.ToString());
             if (e.AddedItems.Count > 0)
             {
                 Conversation selectedConversation = (Conversation)e.AddedItems[0];
@@ -57,12 +44,23 @@ namespace ToxWinApp
 
         private void requestsButton_Click(object sender, RoutedEventArgs e)
         {
+            
             Frame.Navigate(typeof(RequestsPage));
         }
 
         private void friendsButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(RequestsPage), (App.Current as App).Friends);
+            Frame.Navigate(typeof(FriendsPage), (App.Current as App).Friends);
+        }
+
+        private void CopyID(object sender, RoutedEventArgs e)
+        {
+            DataPackage myIdPackage = new DataPackage();
+            myIdPackage.SetText((App.Current as App).MyAccount.Id);
+
+            Clipboard.SetContent(myIdPackage);
+
+            showIdButton.Flyout.Hide();
         }
         
     }

@@ -133,6 +133,17 @@ namespace ToxWinApp
 
         }
 
+        private async void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
+        {
+            //System.Diagnostics.Debug.WriteLine("Request recieved {0}", e.Id);
+            ////automatically accept every friend request we receive
+
+            //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            //{
+            //    myRequests.Add(new ToxAccount() { Id = e.Id, Name = e.Id.ToString() });
+            //});
+        }
+
         private async Task SaveData()
         {
             StorageFile file = await ApplicationData.Current.LocalFolder.CreateFileAsync(TOX_DATA_FILE_NAME, CreationCollisionOption.ReplaceExisting);
