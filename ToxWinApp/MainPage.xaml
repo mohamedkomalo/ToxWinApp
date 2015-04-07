@@ -49,7 +49,7 @@
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button x:Name="friendsButton" Content="Friends" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,165,0" Height="65" Click="friendsButton_Click" Width="95"/>
+        <Button x:Name="friendsButton" Content="Friends" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,176,0" Height="65" Click="friendsButton_Click" Width="122"/>
 
         <ListView x:Name="conversationsListView"
     		Margin="30,176,48,34" SelectionMode="Single" ItemContainerStyle="{StaticResource FriendsListViewItemStyle}" Background="#FF8B8B8B" SelectionChanged="SelectedConversationChanged" ItemsSource="{StaticResource convList}">
@@ -76,9 +76,15 @@
         <Image HorizontalAlignment="Left" Height="65" VerticalAlignment="Top" Width="68" Margin="30,27,0,0" Source="Assets/StoreLogo.png" Stretch="UniformToFill"/>
         <TextBlock HorizontalAlignment="Left" Margin="103,33,0,0" TextWrapping="Wrap" Text="Mohamed Kamal Kamaly" VerticalAlignment="Top" FontSize="24"/>
         <TextBlock HorizontalAlignment="Left" Margin="105,64,0,0" TextWrapping="Wrap" Text="Toxing on tox" VerticalAlignment="Top" FontSize="16"/>
-        <Button x:Name="requestsButton" Content="Requests" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,57,0" Height="65" Click="requestsButton_Click" Width="97"/>
+        <Button x:Name="requestsButton" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,45,0" Height="65" Click="requestsButton_Click" Width="122">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Requests (</TextBlock>
+                <TextBlock Text="{Binding Requests.Count}"/>
+                <TextBlock>)</TextBlock>
+            </StackPanel>
+        </Button>
 
-        <Button x:Name="showIdButton" Content="My ID" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,273,0" Height="65" Width="95">
+        <Button x:Name="showIdButton" Content="My ID" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,30,309,0" Height="65" Width="122">
             <Button.Flyout>
                 <Flyout>
                     <StackPanel Width="382">
