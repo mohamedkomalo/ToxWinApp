@@ -1,6 +1,7 @@
 ﻿using SharpTox.Core;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +21,17 @@ namespace ToxWinApp
             Friend f = new Friend();
             f.Id = Id;
             f.FriendNumber = friendNumber;
-            f.Name = ToxController.Instance.tox.GetName(friendNumber);
+            f.Name = f.Id;
             f.Status = ToxController.Instance.tox.GetStatusMessage(friendNumber);
 
             ToxController.Instance.Requests.Remove(this);
             ToxController.Instance.Friends.Add(f);
+
+            Conversation friendConversation = new Conversation();
+            friendConversation.Members = new ObservableCollection<Friend>();
+            friendConversation.Members.Add(f);
+
+            ToxController.Instance.Conversations.Add(friendConversation);
         }
     }
 }

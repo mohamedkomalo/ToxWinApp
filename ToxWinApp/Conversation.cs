@@ -32,7 +32,7 @@ namespace ToxWinApp
         }
 
         public bool SendMessage(String messageBody){
-            bool isSent = Tox.SendMessage(Members[0].FriendNumber, messageBody) == 1;
+            bool isSent = Tox.SendMessage(Members[0].FriendNumber, messageBody) > 0;
 
             if (isSent)
             {

@@ -5,9 +5,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Core;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.System.UserProfile;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 
 namespace ToxWinApp
@@ -97,7 +99,7 @@ namespace ToxWinApp
 
             tox.OnFriendMessage += tox_OnFriendMessage;
 
-            Requests.Add(new RecievedFriendRequest() { Id = "75BC509C2AE5375C28F1EF9CAB53BD75DF0049F25FAE48AA3363A78E05CAB16D09DCE60DA7BF", Message = "Hi" });
+            Requests.Add(new RecievedFriendRequest() { Id = "75BC509C2AE5375C28F1EF9CAB53BD75DF0049F25FAE48AA3363A78E05CAB16D09DCE60DA7BF", Message = "Dummy request" });
         }
 
         public void UnLoad()
@@ -105,46 +107,56 @@ namespace ToxWinApp
             tox.Dispose();
         }
 
-        private void tox_OnUserStatus(object sender, ToxEventArgs.UserStatusEventArgs e)
+        private async void tox_OnUserStatus(object sender, ToxEventArgs.UserStatusEventArgs e)
         {
-            Friend senderFriend = _Friends.First(f => f.FriendNumber == e.FriendNumber);
-            senderFriend.Status = e.UserStatus.ToString();
-        }
-
-        private void tox_OnNameChange(object sender, ToxEventArgs.NameChangeEventArgs e)
-        {
-            Friend friend = _Friends.First(f => f.FriendNumber == e.FriendNumber);
-            friend.Name = e.Name;
-        }
-
-        private void tox_OnFriendMessage(object sender, ToxEventArgs.FriendMessageEventArgs e)
-        {
-            Friend senderFriend = null;
-
-            // Need someway to differntiate between normal and group conversation
-            Conversation conversation = Conversations.First(c =>
+            await UIDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
             {
-                senderFriend = c.Members.First(f => f.FriendNumber == e.FriendNumber);
-                return senderFriend != null;
+                Friend senderFriend = _Friends.First(f => f.FriendNumber == e.FriendNumber);
+                senderFriend.Status = e.UserStatus.ToString();
             });
+        }
 
-            conversation.Add(new Message() { Sender = senderFriend, Content = e.Message });
+        private async void tox_OnNameChange(object sender, ToxEventArgs.NameChangeEventArgs e)
+        {
+            await UIDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                Friend friend = _Friends.First(f => f.FriendNumber == e.FriendNumber);
+                friend.Name = e.Name;
+            });
+        }
 
-            //System.Diagnostics.Debug.WriteLine("Friend {0} sent: {1}", e.FriendNumber, e.Message);
+        private async void tox_OnFriendMessage(object sender, ToxEventArgs.FriendMessageEventArgs e)
+        {
+            await UIDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
+            {
+                Friend senderFriend = null;
 
-            System.Diagnostics.Debug.WriteLine("<{0}> {1}", senderFriend.Name, e.Message);
+                // Need someway to differntiate between normal and group conversation
+                Conversation conversation = Conversations.First(c =>
+                {
+                    senderFriend = c.Members.FirstOrDefault(f => f.FriendNumber == e.FriendNumber);
+                    return senderFriend != null;
+                });
 
+                conversation.Add(new Message() { Sender = senderFriend, Content = e.Message });
+
+                //System.Diagnostics.Debug.WriteLine("Friend {0} sent: {1}", e.FriendNumber, e.Message);
+
+                System.Diagnostics.Debug.WriteLine("<{0}> {1}", senderFriend.Name, e.Message);
+            });
         }
 
         private async void tox_OnFriendRequest(object sender, ToxEventArgs.FriendRequestEventArgs e)
         {
-            //System.Diagnostics.Debug.WriteLine("Request recieved {0}", e.Id);
-            ////automatically accept every friend request we receive
+            await UIDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                Requests.Add(new RecievedFriendRequest() { Id = e.Id, Message = e.Message });
+            });
+        }
 
-            //await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.High, () =>
-            //{
-            //    myRequests.Add(new ToxAccount() { Id = e.Id, Name = e.Id.ToString() });
-            //});
+        private CoreDispatcher UIDispatcher
+        {
+            get { return CoreApplication.MainView.CoreWindow.Dispatcher; }
         }
 
         private async Task SaveData()

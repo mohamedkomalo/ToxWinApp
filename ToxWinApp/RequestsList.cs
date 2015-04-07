@@ -11,7 +11,7 @@ namespace ToxWinApp
     {
         public bool SendRequest(String toxId, String requestMessage)
         {
-            return ToxController.Instance.tox.AddFriend(new SharpTox.Core.ToxId(toxId), requestMessage) == 1;
+            return ToxController.Instance.tox.AddFriend(new SharpTox.Core.ToxId(toxId), requestMessage) > 0;
         }
     }
 }
